@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+from scipy.signal import find_peaks
+
+# Your data
+data = np.array([
+    1.63086937, 1.266319441, 1.109075122, 1.069400557, 1.058212241,
+    0.993308789, 0.95916355, 0.949721213, 0.944324718, 0.924738671,
+    0.850369277, 0.83521671, 0.776119799, 0.700765137, 0.588462194,
+    0.553195861, 0.521684532, 0.476937364, 0.4538013, 0.426320911,
+    0.375731267, 0.362797149, 0.051700353, 0.042504634, -0.318451246,
+    -0.44439776, -0.447015606, -0.457311478, -0.459282712, -0.515301647,
+    -0.566998659, -0.593766489, -0.600343581, -0.610001577, -0.648996501,
+    -0.799724201, -0.823069916, -0.851582453, -0.870052443, -0.88585625,
+    -0.88645772, -0.911120044, -0.943857738, -0.974202759, -1.045275209,
+    -1.061780582, -1.117418546, -1.135726303, -1.175678875, -1.198321941,
+    -1.225483034, -1.233512794, -1.271402757, -1.299988938, -1.541664374,
+    -1.949620244
+])
+
+# Histogram
+plt.figure(figsize=(10, 5))
+plt.hist(data, bins=30, alpha=0.7, color='blue', edgecolor='black')
+plt.axvline(0.04, color='red', linestyle='--', label='Proposed threshold (0.04)')
+plt.title("Distribution histogram")
+plt.xlabel("Value")
+plt.ylabel("Frequency")
+plt.legend()
+plt.show()
+
+# Kernel density estimation (KDE)
+density = gaussian_kde(data)
+x = np.linspace(min(data), max(data), 1000)
+plt.figure(figsize=(10, 5))
+plt.plot(x, density(x), color='green', label='KDE')
+plt.axvline(0.04, color='red', linestyle='--', label='Proposed threshold (0.04)')
+plt.title("KDE of data distribution")
+plt.xlabel("Value")
+plt.ylabel("Probability Density")
+plt.legend()
+plt.show()

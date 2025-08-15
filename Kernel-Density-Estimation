@@ -1,9 +1,8 @@
 import numpy as np
+from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
-from scipy.stats import gaussian_kde
-from scipy.signal import find_peaks
 
-# Your data
+# Data
 data = np.array([
     1.63086937, 1.266319441, 1.109075122, 1.069400557, 1.058212241,
     0.993308789, 0.95916355, 0.949721213, 0.944324718, 0.924738671,
@@ -19,24 +18,35 @@ data = np.array([
     -1.949620244
 ])
 
-# Histogram
-plt.figure(figsize=(10, 5))
-plt.hist(data, bins=30, alpha=0.7, color='blue', edgecolor='black')
-plt.axvline(0.04, color='red', linestyle='--', label='Proposed threshold (0.04)')
-plt.title("Distribution histogram")
-plt.xlabel("Value")
-plt.ylabel("Frequency")
-plt.legend()
+# Transform data into a 2D array (principal value as a single point in 1D space)
+X = data.reshape(-1, 1)
+
+# Apply DBSCAN
+# eps - maximum distance between two points to consider them neighbors
+# min_samples - minimum number of points in the neighborhood to consider a point as a core
+dbscan = DBSCAN(eps=0.35, min_samples=3)
+clusters = dbscan.fit_predict(X)
+
+# Visualisation
+plt.figure(figsize=(10, 6))
+plt.scatter(range(len(data)), data, c=clusters, cmap='viridis', s=100)
+plt.colorbar(label='Cluster')
+plt.xlabel('Point index')
+plt.ylabel('Value')
+plt.title('DBSCAN clustering')
+plt.grid(True)
 plt.show()
 
-# Kernel density estimation (KDE)
-density = gaussian_kde(data)
-x = np.linspace(min(data), max(data), 1000)
-plt.figure(figsize=(10, 5))
-plt.plot(x, density(x), color='green', label='KDE')
-plt.axvline(0.04, color='red', linestyle='--', label='Proposed threshold (0.04)')
-plt.title("KDE of data distribution")
-plt.xlabel("Value")
-plt.ylabel("Probability Density")
-plt.legend()
-plt.show()
+# Save the graph to a file (before plt.show()!)
+plt.savefig('dbscan_clustering.png', dpi=600, bbox_inches='tight')  # PNG
+# plt.savefig('dbscan_clustering.pdf', bbox_inches='tight')  # PDF
+# plt.savefig('dbscan_clustering.svg', bbox_inches='tight')  # SVG
+
+plt.show()  # Показываем график (после сохранения)
+
+# Output information about clusters
+print("Cluster Labels:", clusters)
+n_clusters = len(set(clusters)) - (1 if -1 in clusters else 0)
+n_noise = list(clusters).count(-1)
+print(f"Clusters found: {n_clusters}")
+print(f"Noise points: {n_noise}")
